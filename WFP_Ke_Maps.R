@@ -11,30 +11,31 @@ root <- "D:/OneDrive - CGIAR/SA_Team/"
 #FCS
 FCS <- read_excel(paste0(root,'Brenda/WFP/data/FCS.xlsx'))
 Final_df <- FCS["COUNTY"]
-Final_df$Mean_poor <- rowMeans(FCS[,c("2019_Poor","2020_Poor", "2021_Poor")])
-Final_df$Mean_borderline <- rowMeans(FCS[,c("2019_Borderline","2020_Borderline", "2021_Borderline")])
-Final_df$Mean_acceptable <- rowMeans(FCS[,c("2019_Acceptable","2020_Acceptable", "2021_Acceptable")])
+Final_df$Mean_poor <- rowMeans(FCS[,c("2019_Poor","2020_Poor", "2021_Poor","2022_Poor")])
+Final_df$Mean_borderline <- rowMeans(FCS[,c("2019_Borderline","2020_Borderline", "2021_Borderline", "2022_Borderline")])
+Final_df$Mean_acceptable <- rowMeans(FCS[,c("2019_Acceptable","2020_Acceptable", "2021_Acceptable", "2022_Acceptable")])
 Final_df
 head(Final_df)
+write.csv(Final_df,paste0(root,'Brenda/WFP/FCS.csv'),row.names = FALSE)
 Counties <- FCS$COUNTY
 Counties
 #rCSI
 rcsi <- read_excel(paste0(root,'Brenda/WFP/data/FCS.xlsx'), sheet="rCSI")
 colnames(rcsi)
 rcsi_DF <- rcsi["COUNTY"]
-rcsi_DF$Mean_None <- rowMeans(rcsi[,c("2019_None","2020_None", "2021_None")])
-rcsi_DF$Mean_Stressed <- rowMeans(rcsi[,c("2019_Stressed","2020_Stressed", "2021_Stressed")])
-rcsi_DF$Mean_Crisis <- rowMeans(rcsi[,c("2019_Crisis","2020_Crisis", "2020_Crisis")])
+rcsi_DF$Mean_None <- rowMeans(rcsi[,c("2019_None","2020_None", "2021_None", "2022_None")])
+rcsi_DF$Mean_Stressed <- rowMeans(rcsi[,c("2019_Stressed","2020_Stressed", "2021_Stressed", "2022_Stressed")])
+rcsi_DF$Mean_Crisis <- rowMeans(rcsi[,c("2019_Crisis","2020_Crisis", "2021_Crisis", "2022_Crisis")])
 rcsi_DF
 
 #livelihood coping
 livelihood <- read_excel(paste0(root,'Brenda/WFP/data/FCS.xlsx'), sheet="Livelihood")
 names(livelihood)
 livelihood_df <- livelihood["COUNTY"]
-livelihood_df$Mean_No_Coping <- rowMeans(livelihood[,c("2019_No_coping","2020_No_coping", "2021_No_coping")])
-livelihood_df$Mean_Stress_Coping <- rowMeans(livelihood[,c("2019_Stress_coping","2020_Stress_coping", "2021_Stress_coping")])
-livelihood_df$Mean_Crisis_Coping <- rowMeans(livelihood[,c("2019_Crisis_coping","2020_Crisis_coping", "2021_Crisis_coping")])
-livelihood_df$Mean_Emergencies <- rowMeans(livelihood[,c("2019_Emergencies","2020_Emergencies", "2021_Emergencies")])
+livelihood_df$Mean_No_Coping <- rowMeans(livelihood[,c("2019_No_coping","2020_No_coping", "2021_No_coping", "2022_No_coping")])
+livelihood_df$Mean_Stress_Coping <- rowMeans(livelihood[,c("2019_Stress_coping","2020_Stress_coping", "2021_Stress_coping","2022_Stress_coping")])
+livelihood_df$Mean_Crisis_Coping <- rowMeans(livelihood[,c("2019_Crisis_coping","2020_Crisis_coping", "2021_Crisis_coping", "2022_Crisis_coping")])
+livelihood_df$Mean_Emergencies <- rowMeans(livelihood[,c("2019_Emergencies","2020_Emergencies", "2021_Emergencies", "2022_Emergencies")])
 livelihood_df
 
 #get counties shapefile
