@@ -154,7 +154,7 @@ label <- c("High conflict + Moderate-High drought","High conflict + Low drought"
             "Limited conflict + High drought", "Limited conflict + Moderate-High drought ",
             "Limited conflict + Moderate-Low drought", "Limited conflict + Low drought")
 high_conf_label <- c("High conflict + Moderate-High drought stress","High conflict + Low drought stress")
-#plotting
+#plotting FCS
 tmap_mode("plot")
 map <- tm_shape(merged)+
   tm_fill(col="FCS", title="FCS",style = "cont", palette = viridis(100,direction	=-1),legend.show = T)+
@@ -256,6 +256,7 @@ all_conf <- function(conf){
 conflict_icsmag <- all_conf(conflict)
 plot(conflict_icsmag)
 unique(conflict_icsmag$intersect_conf_clim)
+
 #maps for icsmag
 icsmag_map <- tm_shape(merged_icsmag)+
   tm_fill(col="ICAMCG", title="ICAMCG",style = "cat", palette = viridis(8,direction	=-1),legend.show = T)+
@@ -265,23 +266,25 @@ icsmag_map <- tm_shape(merged_icsmag)+
   #tm_shape(merged)+
   #tm_borders(col="grey",lwd=0.01)+
   #tm_text("NAME_2", size = 0.8, remove.overlap = TRUE, col ='black')+
-  tm_compass(type = "8star", size=3,position = c("right", "bottom")) +
-  tm_scale_bar(breaks = c(0, 50, 100), text.size = 1.2, 
+  tm_compass(type = "8star", size=4,position = c("right", "bottom")) +
+  tm_scale_bar(breaks = c(0, 50, 100), text.size = 1.5, 
                position = c("right", "bottom"))+
   tm_layout(legend.outside=F, 
-            legend.text.size = 0.59,
+            legend.text.size = 1,
             legend.text.color = "black",
-            legend.title.size= 0.8,
+            legend.title.size= 1.1,
             legend.title.color = "black",
             legend.title.fontface = 2,
             legend.frame=F,
+            asp = 1.4,
             legend.position = c("left", "top"), 
             legend.width = 0.6,
-            inner.margins = c(0.02,0.03,0.05,0.02)
+            inner.margins = c(0,0,0.005,0.005)
   )
 
 icsmag_map
-
+tmap_save(icsmag_map,  dpi= 300,  height=8.3, width=11.7, units="in",
+          filename="D:/OneDrive - CGIAR/SA_Team/Brenda/Mali/map.png")
 
 
 
