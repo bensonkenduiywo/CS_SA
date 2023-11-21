@@ -164,22 +164,25 @@ map <- tm_shape(merged)+
   #tm_shape(merged)+
  #tm_borders(col="grey",lwd=0.01)+
   #tm_text("NAME_2", size = 0.8, remove.overlap = TRUE, col ='black')+
-  tm_compass(type = "8star", size=3,position = c("right", "bottom")) +
-  tm_scale_bar(breaks = c(0, 50, 100), text.size = 1.2, 
+  tm_compass(type = "8star", size=4,position = c("right", "bottom")) +
+  tm_scale_bar(breaks = c(0, 50, 100), text.size = 1.5, 
                position = c("right", "bottom"))+
   tm_layout(legend.outside=F, 
-            legend.text.size = 0.59,
+            legend.text.size = 1,
             legend.text.color = "black",
-            legend.title.size= 0.8,
+            legend.title.size= 1,
             legend.title.color = "black",
             legend.title.fontface = 2,
             legend.frame=F,
+            asp=1.4,
             legend.position = c("right", "top"), 
             legend.width = 0.6,
-            inner.margins = c(0.02,0.02,0.05,0.1)
+            inner.margins = c(0,0,0,0)
   )
 
 map
+tmap_save(map,  dpi= 300,  height=8.3, width=11.7, units="in",
+          filename="D:/OneDrive - CGIAR/SA_Team/Brenda/Mali/final_maps/FCS1.png")
 
 #ICSMAG data
 ICSMAG <- read_excel(paste0(path,"mli_ica+Nut_CollectingTable_20230720.xlsx"))
@@ -212,7 +215,8 @@ high_conflict <- function(conf){
 high_conf <- high_conflict(conflict)
 plot(high_conf)
 all_conf <- function(conf){
-  county_conf <- st_intersection(conf, merged_icsmag)
+  county_conf <- conf[conf$conflict_clust_label != "Limited conflict"  ,]
+  county_conf <- st_intersection(county_conf, merged_icsmag)
   i <- county_conf$intersect_conf_clim
   county_conf$intersect_conf_clim[i=="High conflict-[High levels of precipitation/Low levels of drought stress]"] <-
     "High conflict + Low drought stress" 
@@ -228,19 +232,7 @@ all_conf <- function(conf){
   county_conf$intersect_conf_clim[i=="Moderate conflict-[Low levels of precipitation/High levels of drought stress]"] <-
     "Moderate conflict + High drought stress"
   
-  county_conf$intersect_conf_clim[i=="Limited conflict-[High levels of precipitation/Low levels of drought stress]"] <-
-    "Limited conflict + Low drought stress" 
-  county_conf$intersect_conf_clim[i=="Limited conflict-[High-Moderate levels of precipitation/Moderate-Low levels of drought stress]"] <-
-    "Limited conflict + Moderate-Low drought stress"
-  county_conf$intersect_conf_clim[i=="Limited conflict-[Moderate-Low levels of precipitation/Moderate-High levels of drought stress]"] <-
-    "Limited conflict + Moderate-High drought stress"
-  county_conf$intersect_conf_clim[i=="Limited conflict-[Low levels of precipitation/High levels of drought stress]"] <-
-    "Limited conflict + High drought stress"
   i <- county_conf$intersect_conf_clim
-  county_conf$clust[i=="Limited conflict + Low drought stress"] <- 10
-  county_conf$clust[i=="Limited conflict + Moderate-Low drought stress"] <- 9
-  county_conf$clust[i=="Limited conflict + Moderate-High drought stress"] <- 8
-  county_conf$clust[i=="Limited conflict + High drought stress"] <- 7
   
   county_conf$clust[i=="Moderate conflict + Low drought stress"] <- 6
   county_conf$clust[i=="Moderate conflict + Moderate-Low drought stress"] <- 5
@@ -255,11 +247,11 @@ all_conf <- function(conf){
 
 conflict_icsmag <- all_conf(conflict)
 plot(conflict_icsmag)
-unique(conflict_icsmag$intersect_conf_clim)
+unique(conflict_icsmag$clust)
 
 #maps for icsmag
 icsmag_map <- tm_shape(merged_icsmag)+
-  tm_fill(col="ICAMCG", title="ICAMCG",style = "cat", palette = viridis(8,direction	=-1),legend.show = T)+
+  tm_fill(col="ICAMAG", title="ICAMAG",style = "cat", palette = viridis(8,direction	=-1),legend.show = T)+
   tm_shape(conflict_icsmag) +
   tm_fill(col= "clust", palette="-YlOrRd", title="Conflict-Climate Intersection",
           legend.show = T, labels=label)+
@@ -279,12 +271,12 @@ icsmag_map <- tm_shape(merged_icsmag)+
             asp = 1.4,
             legend.position = c("left", "top"), 
             legend.width = 0.6,
-            inner.margins = c(0,0,0.005,0.005)
+            inner.margins = c(0,0,0,0)
   )
 
 icsmag_map
 tmap_save(icsmag_map,  dpi= 300,  height=8.3, width=11.7, units="in",
-          filename="D:/OneDrive - CGIAR/SA_Team/Brenda/Mali/map.png")
+          filename="D:/OneDrive - CGIAR/SA_Team/Brenda/Mali/final_maps/ICAMAG.png")
 
 
 
