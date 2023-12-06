@@ -169,11 +169,18 @@ county_shp <- subset(county_shp, select=c("NAME_1"))
 names(county_shp)[names(county_shp) == "NAME_1"] <- "COUNTY"
 View(county_shp)
 names(county_shp)
+#official kenya shapefile
+kenya <- sf::st_read(paste0(root,"Data/Admin/KEN/Kenya_county_dd.shp"))
+kenya <- sf::st_as_sf(kenya)
+kenya <- subset(kenya, select=c("county"))
+names(kenya)[names(kenya) == "county"] <- "COUNTY"
+kenya
 #merge county and keco data
 kenya_fs <- merge(county_shp,keco, by="COUNTY", all=TRUE)
 View(kenya_fs)
-plot(kenya_fs)
-
+plot(kenya_keco)
+kenya_keco <- merge(kenya, keco, by="COUNTY", all=TRUE)
+View(kenya_keco)
 #Maps
 #lakes shapefile
 lakes <- sf::st_read(paste0(root,"Brenda/WFP/data/KEN_Lakes/KEN_Lakes.shp"))
@@ -183,7 +190,10 @@ st_is_valid(lakes)
 plot(lakes)
 indian_ocean <- sf::st_read(paste0(root,"Brenda/WFP/data/eez_iho/eez_iho.shp"))
 indian_ocean <- sf::st_as_sf(indian_ocean)
-plot(indian_ocean)
+ocean <- sf::st_read(paste0(root,"Brenda/WFP/data/iho/iho.shp"))
+ocean <- sf::st_as_sf(ocean)
+st_is_valid(ocean)
+plot(ocean)
 #neighbouring countries
 cc <- country_codes()
 View(cc)
@@ -259,6 +269,7 @@ high_drought <- function(conf){
   return(county_conf)
 }
 high_drought_stress <- high_drought(conflict)
+View(high_conf)
 high_drought_label <- c("High drought stress + High conflict","High drought stress + Moderate conflict",
                         "High drought stress + Limited conflict")
 #high conflict cluster
@@ -287,11 +298,38 @@ high_label <- c("High conflict + High drought", "High conflict + Moderate-High d
                 "High conflict + Moderate-Low drought", "High conflict + Low drought")
 #tmap
 tmap_mode("plot")
-map <- tm_shape(kenya_fs)+
-  tm_polygons(col="fcs",border.col = "black", title="FCS (%)",style = "cont", palette = viridis(100,direction	=-1),legend.show = T)+
+map_all <- tm_shape(kenya_keco)+
+  tm_polygons(col="fcs",border.col = "black", title="FCS (%)",style = "cont", palette = viridis(100,direction	=-1),legend.show = F)+
   tm_shape(lakes) +
   tm_fill(col= "skyblue")+
-  tm_shape(indian_ocean)+
+  tm_shape(ocean)+
+  tm_fill(col="skyblue")+
+  tm_shape(neighbors)+
+  tm_borders(col="black", lwd=1)+
+  #tm_text("COUNTRY",size = 0.5, remove.overlap = TRUE, col ='black')+
+  tm_shape(all_conflict) +
+  tm_fill(col= "clust", palette="-YlOrRd", title="Conflict-Climate intersection",
+          legend.show = T, labels=all_label)+
+  tm_compass(type = "8star", size=9,position = c("right", "top")) +
+  tm_scale_bar(breaks = c(0, 50, 100), text.size = 1.5, 
+               position = c("right", "bottom"))+
+  tm_layout(legend.outside=F, 
+            legend.text.size = 0.8,
+            legend.text.color = "black",
+            legend.title.size= 1.0,
+            legend.title.color = "black",
+            legend.title.fontface = 2,
+            legend.frame=F,
+            asp=0.7, 
+            legend.width = 0.7,
+            inner.margins = c(0,0.05,0,0.05)
+  )
+map_all
+map_high_conf <- tm_shape(kenya_keco)+
+  tm_polygons(col="fcs",border.col = "black", title="FCS (%)",style = "cont", palette = viridis(100,direction	=-1),legend.show = F)+
+  tm_shape(lakes) +
+  tm_fill(col= "skyblue")+
+  tm_shape(ocean)+
   tm_fill(col="skyblue")+
   tm_shape(neighbors)+
   tm_borders(col="black", lwd=1)+
@@ -303,9 +341,9 @@ map <- tm_shape(kenya_fs)+
   tm_scale_bar(breaks = c(0, 50, 100), text.size = 1.5, 
                position = c("right", "bottom"))+
   tm_layout(legend.outside=F, 
-            legend.text.size = 1.4,
+            legend.text.size = 1.2,
             legend.text.color = "black",
-            legend.title.size= 1.6,
+            legend.title.size= 1.2,
             legend.title.color = "black",
             legend.title.fontface = 2,
             legend.frame=F,
@@ -314,9 +352,46 @@ map <- tm_shape(kenya_fs)+
             legend.width = 0.7,
             inner.margins = c(0,0.05,0,0.05)
   )
-
-
-map
-tmap_save(map,  dpi= 300,  height=11.7, width=8.3, units="in",
-          filename="D:/OneDrive - CGIAR/SA_Team/Brenda/WFP/KECO_MAPS/FCS_High_Conf.png")
+map_high_conf
+map_high_drought <- tm_shape(kenya_keco)+
+  tm_polygons(col="fcs",border.col = "black", title="FCS (%)",style = "cont", palette = viridis(100,direction	=-1),legend.show = F)+
+  tm_shape(lakes) +
+  tm_fill(col= "skyblue")+
+  tm_shape(ocean)+
+  tm_fill(col="skyblue")+
+  tm_shape(neighbors)+
+  tm_borders(col="black", lwd=1)+
+  #tm_text("COUNTRY",size = 0.5, remove.overlap = TRUE, col ='black')+
+  tm_shape(high_drought_stress) +
+  tm_fill(col= "clust", palette="-YlOrRd", title="Conflict-Climate intersection",
+          legend.show = T, labels=high_drought_label)+
+  tm_compass(type = "8star", size=9,position = c("right", "top")) +
+  tm_scale_bar(breaks = c(0, 50, 100), text.size = 1.5, 
+               position = c("right", "bottom"))+
+  tm_layout(legend.outside=F, 
+            legend.text.size = 1.2,
+            legend.text.color = "black",
+            legend.title.size= 1.2,
+            legend.title.color = "black",
+            legend.title.fontface = 2,
+            legend.frame=F,
+            asp=0.7,
+            legend.position = c("left", "bottom"), 
+            legend.width = 0.7,
+            inner.margins = c(0,0.05,0,0.05)
+  )
+map_high_drought
+legend <- tm_shape(kenya_keco)+
+  tm_polygons(col="fcs",border.col = "black", title="FCS (%)",style = "cont", palette = viridis(100,direction	=-1))+
+  tm_layout(legend.only = TRUE, legend.text.size=1.5, legend.title.size = 1.6, legend.title.fontface = 2, asp=1.4)
+legend
+  
+  
+  
+  
+final <- tmap_arrange(map_all, map_high_conf, map_high_drought, legend, nrow=1,
+                      ncol=4, widths=c(0.3,0.3,0.3,0.1))
+final
+tmap_save(final,  dpi= 300,  height=8.3, width=11.7, units="in",
+          filename="D:/OneDrive - CGIAR/SA_Team/Brenda/WFP/KECO_MAPS/x8.png")
 
