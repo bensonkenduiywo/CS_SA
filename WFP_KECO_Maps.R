@@ -23,7 +23,10 @@ fcs_2021 <- read_fcs(paste0(root,'Data/IPC/2021 Outcome Analysis.xlsx'),"NEW_FCS
 View(fcs_2020)
 #get unique county names
 counties <- unique(fcs_2019$County)
-
+#' Function to compute XXXX
+#' @df is the dataframe
+#' @country is  XXX
+#' @name is XXX
 calculate_mean <- function(df, counties, name){
   final_df <- data.frame(county=character(), name=numeric())
   for (county in counties){
